@@ -29,8 +29,8 @@ public class CartItemController {
             @RequestParam("bookid") String bookid ,
             @RequestParam("userid") String userid) {
         CartItemService cartItemService=applicationContext.getBean(CartItemService.class);
-        System.out.println("CartItemController address: "+this);
-        System.out.println("CartItemService address: "+cartItemService);
+//        System.out.println("CartItemController address: "+this);
+//        System.out.println("CartItemService address: "+cartItemService);
 
         return cartItemService.putOrder(bookid,userid);
     }
@@ -39,8 +39,8 @@ public class CartItemController {
     @RequestMapping("/deleteorder")
     public String deleteOrder(@RequestParam("itemId") String itemId) {
         CartItemService cartItemService=applicationContext.getBean(CartItemService.class);
-        System.out.println("CartItemController address: "+this);
-        System.out.println("CartItemService address: "+cartItemService);
+//        System.out.println("CartItemController address: "+this);
+//        System.out.println("CartItemService address: "+cartItemService);
         cartItemService.deleteOrder(itemId);
         return "DONE";
     }
@@ -51,8 +51,8 @@ public class CartItemController {
             @RequestParam("itemId") String itemId,
             @RequestParam("number") String number) {
         CartItemService cartItemService=applicationContext.getBean(CartItemService.class);
-        System.out.println("CartItemController address: "+this);
-        System.out.println("CartItemService address: "+cartItemService);
+//        System.out.println("CartItemController address: "+this);
+//        System.out.println("CartItemService address: "+cartItemService);
         return cartItemService.updateOrder(itemId,number);
     }
 
@@ -60,8 +60,8 @@ public class CartItemController {
     @RequestMapping("/cartOrders")
     public List<CartItem> getCartOrders(@RequestParam("id") String id) {
         CartItemService cartItemService=applicationContext.getBean(CartItemService.class);
-        System.out.println("CartItemController address: "+this);
-        System.out.println("CartItemService address: "+cartItemService);
+//        System.out.println("CartItemController address: "+this);
+//        System.out.println("CartItemService address: "+cartItemService);
         return cartItemService.findCartItemsByUser_Id(Integer.valueOf(id));
     }
 
@@ -70,7 +70,7 @@ public class CartItemController {
     public String payAllOrder(@RequestParam("userid") Integer userid) {
         JmsTemplate jmsTemplate = applicationContext.getBean(JmsTemplate.class);
         jmsTemplate.convertAndSend("orderMessageQueue", userid);
-        System.out.println("UserId= "+userid+" put an order to queue orderMessageQueue");
+//        System.out.println("UserId= "+userid+" put an order to queue orderMessageQueue");
 
         return "DONE";
     }

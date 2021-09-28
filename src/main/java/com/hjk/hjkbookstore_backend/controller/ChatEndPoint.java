@@ -4,14 +4,14 @@ import com.hjk.hjkbookstore_backend.decoders.MessageDecoder;
 import com.hjk.hjkbookstore_backend.encoders.ChatMessageEncoder;
 import com.hjk.hjkbookstore_backend.encoders.JoinMessageEncoder;
 import com.hjk.hjkbookstore_backend.encoders.LeaveMessageEncoder;
-import com.hjk.hjkbookstore_backend.messages.ChatMessage;
-import com.hjk.hjkbookstore_backend.messages.JoinMessage;
-import com.hjk.hjkbookstore_backend.messages.LeaveMessage;
-import com.hjk.hjkbookstore_backend.messages.Message;
+import com.hjk.hjkbookstore_backend.encoders.UsersMessageEncoder;
+import com.hjk.hjkbookstore_backend.messages.*;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -31,7 +31,7 @@ import javax.websocket.Session;
         value = "/chatRoom",
         decoders = { MessageDecoder.class },
         encoders = { JoinMessageEncoder.class, ChatMessageEncoder.class,
-                LeaveMessageEncoder.class}
+                LeaveMessageEncoder.class, UsersMessageEncoder.class}
 )
 public class ChatEndPoint {
     private static final Logger logger = Logger.getLogger("BotEndpoint");
@@ -52,6 +52,7 @@ public class ChatEndPoint {
             session.getUserProperties().put("active", true);
             logger.log(Level.INFO, "Received: {0}", jmsg.toString());
             sendAll(session,new JoinMessage(jmsg.getUsername()));
+            sendAll(session, new UsersMessage(this.getUserList()));
         } else if (msg instanceof ChatMessage) {
             final ChatMessage cmsg = (ChatMessage) msg;
             logger.log(Level.INFO, "Received: {0}", cmsg.toString());
@@ -65,6 +66,7 @@ public class ChatEndPoint {
         if (session.getUserProperties().containsKey("name")) {
             String name = session.getUserProperties().get("name").toString();
             sendAll(session,new LeaveMessage(name));
+            sendAll(session, new UsersMessage(this.getUserList()));
         }
         logger.log(Level.INFO, "Connection closed.");
     }
@@ -86,5 +88,14 @@ public class ChatEndPoint {
         } catch (IOException | EncodeException e) {
             logger.log(Level.INFO, e.toString());
         }
+    }
+
+    public List<String> getUserList() {
+        List<String> users = new ArrayList<>();
+        for (Session s : mySession){
+            if (s.isOpen() && (boolean) s.getUserProperties().get("active"))
+                users.add(s.getUserProperties().get("name").toString());
+        }
+        return users;
     }
 }

@@ -5,13 +5,16 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.hjk.hjkbookstore_backend.dao.*;
 import com.hjk.hjkbookstore_backend.entity.*;
 import com.hjk.hjkbookstore_backend.service.CartItemService;
+import com.hjk.hjkbookstore_backend.service.TempClass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
+
 
 @Service
 public class CartItemServiceImpl implements CartItemService {
@@ -29,6 +32,8 @@ public class CartItemServiceImpl implements CartItemService {
     private BookDetailDao bookDetailDao;
     @Autowired
     private OrderItemDao orderItemDao;
+    @Autowired
+    private TempClass tempClass;
 
     @Override
     public List<CartItem> findCartItemsByUser_Id(Integer userId){return cartItemDao.findCartItemsByUser_Id(userId);}
@@ -44,7 +49,7 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     public String putOrder(String bookid, String userid) {
-        System.out.println("UserId= "+userid+" put an order");
+//        System.out.println("UserId= "+userid+" put an order");
         BookBrief bookBrief=bookBriefDao.findone(Integer.valueOf(bookid));
         User user=userDao.findUserById(Integer.valueOf(userid));
 
@@ -102,36 +107,24 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     @JmsListener(destination = "orderMessageQueue")
+    @Transactional(propagation = Propagation.REQUIRED)
     public void payAllOrder(Integer userid) {
-        System.out.println("UserId= "+userid+" pay an order from queue orderMessageQueue");
-        SimpleDateFormat formatter= new SimpleDateFormat("yyyy.MM.dd");
-        Date date = new Date(System.currentTimeMillis());
-        String strDate=formatter.format(date);
-        List<DateT> dateT=dateTDao.findOne(strDate);
-        if(dateT.isEmpty()){
-            DateT dateT_new=new DateT();
-            dateT_new.setDate(strDate);
-            dateTDao.save(dateT_new);
-        }
-        DateT dateTToUse= dateTDao.findOne(strDate).get(0);
+        String transactionName= TransactionSynchronizationManager.getCurrentTransactionName();
+        System.out.println("Function payAllOrder print: current transaction's name is: "+transactionName);
 
-        Order order=new Order();
-        User user=userDao.findUserById(userid);
-        order.setUser(user);
-        order.setDateT(dateTToUse);
-        orderDao.saveAnOrder(order);
+        DateT dateTToUse=tempClass.insertANewTimeStamp();
+        Order order=tempClass.saveAnOrder(userid, dateTToUse);
+        List<CartItem> cartItems=cartItemDao.findCartItemsByUser_Id(userid);
 
-        List<CartItem> cartItems=cartItemDao.findCartItemsByUser_Id(Integer.valueOf(userid));
-
+        /** @Description: save orderItem and delete cartItem **/
         for(CartItem cartItem:cartItems){
             OrderItem orderItem=new OrderItem();
             orderItem.setNum(cartItem.getNum());
             orderItem.setBook(cartItem.getBook());
             orderItem.setOrder(order);
-
-
             orderItemDao.save(orderItem);
             cartItemDao.deleteAnItem(cartItem);
         }
     }
 }
+

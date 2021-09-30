@@ -10,8 +10,6 @@ public interface BookDetailService {
 
     BookDetail findBookDetailById(Integer id);
 
-    void saveOne(BookDetail bookDetail);
-
     List<BookDetail> findAll();
 
     void delete(BookDetail bookDetail);

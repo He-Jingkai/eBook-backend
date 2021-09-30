@@ -70,7 +70,7 @@ public class CartItemServiceImpl implements CartItemService {
         if (inventory<0)
             return JSON.toJSONString("inventory_empty", SerializerFeature.BrowserCompatible);
         bookDetail.setInventory(inventory);
-        bookDetailDao.saveOne(bookDetail);
+        bookDetailDao.saveOne(bookDetail,1);
 
         return JSON.toJSONString("INSERT", SerializerFeature.BrowserCompatible);
     }
@@ -83,7 +83,7 @@ public class CartItemServiceImpl implements CartItemService {
         BookDetail bookDetail=bookDetailDao.findOne(cartItem.getBook().getId());
         Integer inventory=bookDetail.getInventory()+previousNum;
         bookDetail.setInventory(inventory);
-        bookDetailDao.saveOne(bookDetail);
+        bookDetailDao.saveOne(bookDetail,1);
     }
 
     @Override
@@ -98,7 +98,7 @@ public class CartItemServiceImpl implements CartItemService {
             return JSON.toJSONString("inventory_empty", SerializerFeature.BrowserCompatible);
         else {
             bookDetail.setInventory(inventory);
-            bookDetailDao.saveOne(bookDetail);
+            bookDetailDao.saveOne(bookDetail,1);
             cartItem.setNum(Integer.parseInt(number));
             cartItemDao.saveAnItem(cartItem);
             return JSON.toJSONString("success", SerializerFeature.BrowserCompatible);

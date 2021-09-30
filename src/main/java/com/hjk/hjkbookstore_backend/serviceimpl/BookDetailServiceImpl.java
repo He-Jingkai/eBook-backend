@@ -19,9 +19,6 @@ public class BookDetailServiceImpl implements BookDetailService {
     public BookDetail findBookDetailById(Integer id){ return bookDetailDao.findOne(id);}
 
     @Override
-    public void saveOne(BookDetail bookDetail){bookDetailDao.saveOne(bookDetail);}
-
-    @Override
     public List<BookDetail> findAll(){return bookDetailDao.findAll();}
 
     @Override
@@ -50,7 +47,7 @@ public class BookDetailServiceImpl implements BookDetailService {
         bookDetail.setWriter(writer);
         bookDetail.setInventory(inventory);
         bookDetail.setIsbn(isbn);
-        bookDetailDao.saveOne(bookDetail);
+        bookDetailDao.saveOne(bookDetail,1);
     }
 
     @Override
@@ -75,7 +72,7 @@ public class BookDetailServiceImpl implements BookDetailService {
         bookDetail.setWriter(writer);
         bookDetail.setInventory(inventory);
         bookDetail.setIsbn(isbn);
-        bookDetailDao.saveOne(bookDetail);
+        bookDetailDao.saveOne(bookDetail,0);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.hjk.hjkbookstore_backend.controller;
 
-import com.hjk.hjkbookstore_backend.utils.VisitorCounter;
+import com.hjk.hjkbookstore_backend.service.VisitorsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -8,22 +9,23 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
-
 @RestController
 public class VisitorCounterController {
-    private final VisitorCounter visitorCounter=new VisitorCounter();
+
+    @Autowired
+    private VisitorsService visitorsService;
 
     private class IncreaseCounter implements Runnable{
         @Override
         public void run() {
-            visitorCounter.increaseCounter();
+            visitorsService.increaseVisitorCount();
         }
     }
 
     @CrossOrigin
     @RequestMapping("/getVisitorCount")
-    public Long getVisitorCount() throws ExecutionException, InterruptedException {
-        FutureTask<Long> futureTask= new FutureTask<>(visitorCounter::getCounter);
+    public Integer getVisitorCount() throws ExecutionException, InterruptedException {
+        FutureTask<Integer> futureTask= new FutureTask<>(visitorsService::getInitialVisitorCount);
         Thread thread=new Thread(futureTask);
         thread.start();
         thread.join();

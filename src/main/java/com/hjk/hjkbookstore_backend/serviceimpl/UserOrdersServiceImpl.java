@@ -8,7 +8,6 @@ import com.hjk.hjkbookstore_backend.dao.UserOrdersDao;
 import com.hjk.hjkbookstore_backend.entity.*;
 import com.hjk.hjkbookstore_backend.service.UserOrdersService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,25 +26,18 @@ public class UserOrdersServiceImpl implements UserOrdersService {
     private UserDao userDao;
     @Override
     public List<UserOrders> getAll(){
-        List<UserOrders> userOrders = userOrdersDao.getAll();;
+        List<UserOrders> userOrders = userOrdersDao.getAll();
 
-        Iterator<UserOrders> it = userOrders.iterator();
-        while (it.hasNext()) {
-            UserOrders userOrders1 = it.next();
-//            List<Order> orders=orderDao.findOrdersByUser_Id(userOrders1.getId());
-            List<Order> orders=userDao.findUserById(userOrders1.getId()).getOrders();
-            Integer num=0;
-            Integer total=0;
-            Iterator<Order> orderIterator = orders.iterator();
-            while (orderIterator.hasNext()){
-                Order order=orderIterator.next();
-
-                List<OrderItem> orderItems=order.getOrderItems();
-                Iterator<OrderItem> orderItemIterator=orderItems.iterator();
-                while (orderItemIterator.hasNext()){
-                    OrderItem orderItem=orderItemIterator.next();
-                    num+=orderItem.getNum();
-                    total+=orderItem.getNum()*orderItem.getBook().getPrice();
+        for (UserOrders userOrders1 : userOrders) {
+            //            List<Order> orders=orderDao.findOrdersByUser_Id(userOrders1.getId());
+            List<Order> orders = userDao.findUserById(userOrders1.getId()).getOrders();
+            int num = 0;
+            int total = 0;
+            for (Order order : orders) {
+                List<OrderItem> orderItems = order.getOrderItems();
+                for (OrderItem orderItem : orderItems) {
+                    num += orderItem.getNum();
+                    total += orderItem.getNum() * orderItem.getBook().getPrice();
                 }
 
             }
@@ -59,33 +51,25 @@ public class UserOrdersServiceImpl implements UserOrdersService {
     @Override
     public List<UserOrders> getAllWeek(){
         List<UserOrders> userOrders=userOrdersDao.getAll();
-        Iterator<UserOrders> userOrdersIterator=userOrders.iterator();
-        while (userOrdersIterator.hasNext()){
-            UserOrders userOrders1=userOrdersIterator.next();
-
+        for (UserOrders userOrders1 : userOrders) {
             List<Order> orders = new ArrayList<>();
-            for(int i=0;i<7;i++){
+            for (int i = 0; i < 7; i++) {
                 Calendar calendar1 = Calendar.getInstance();
                 SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy.MM.dd");
                 calendar1.add(Calendar.DATE, (-i));
                 String date = sdf1.format(calendar1.getTime());
 
-                List<Order> orders_tmp=orderDao.findOrdersByUser_IdAndDateT_Date(userOrders1.getId(),date);
+                List<Order> orders_tmp = orderDao.findOrdersByUser_IdAndDateT_Date(userOrders1.getId(), date);
                 orders.addAll(orders_tmp);
             }
 
-            Integer total=0;
-            Integer num=0;
-            Iterator<Order> orderIterator=orders.iterator();
-            while (orderIterator.hasNext()){
-                Order order=orderIterator.next();
-
-                List<OrderItem> orderItems=order.getOrderItems();
-                Iterator<OrderItem> orderItemIterator=orderItems.iterator();
-                while (orderItemIterator.hasNext()){
-                    OrderItem orderItem=orderItemIterator.next();
-                    num+=orderItem.getNum();
-                    total+=orderItem.getNum()*orderItem.getBook().getPrice();
+            int total = 0;
+            int num = 0;
+            for (Order order : orders) {
+                List<OrderItem> orderItems = order.getOrderItems();
+                for (OrderItem orderItem : orderItems) {
+                    num += orderItem.getNum();
+                    total += orderItem.getNum() * orderItem.getBook().getPrice();
                 }
 
             }
@@ -99,32 +83,25 @@ public class UserOrdersServiceImpl implements UserOrdersService {
     @Override
     public List<UserOrders> getAllMonth(){
         List<UserOrders> userOrders=userOrdersDao.getAll();
-        Iterator<UserOrders> userOrdersIterator=userOrders.iterator();
-        while (userOrdersIterator.hasNext()){
-            UserOrders userOrders1=userOrdersIterator.next();
-
+        for (UserOrders userOrders1 : userOrders) {
             List<Order> orders = new ArrayList<>();
-            for(int i=0;i<30;i++){
+            for (int i = 0; i < 30; i++) {
                 Calendar calendar1 = Calendar.getInstance();
                 SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy.MM.dd");
                 calendar1.add(Calendar.DATE, (-i));
                 String date = sdf1.format(calendar1.getTime());
 
-                List<Order> orders_tmp=orderDao.findOrdersByUser_IdAndDateT_Date(userOrders1.getId(),date);
+                List<Order> orders_tmp = orderDao.findOrdersByUser_IdAndDateT_Date(userOrders1.getId(), date);
                 orders.addAll(orders_tmp);
             }
 
-            Integer total=0;
-            Integer num=0;
-            Iterator<Order> orderIterator=orders.iterator();
-            while (orderIterator.hasNext()){
-                Order order=orderIterator.next();
-                List<OrderItem> orderItems=order.getOrderItems();
-                Iterator<OrderItem> orderItemIterator=orderItems.iterator();
-                while (orderItemIterator.hasNext()){
-                    OrderItem orderItem=orderItemIterator.next();
-                    num+=orderItem.getNum();
-                    total+=orderItem.getNum()*orderItem.getBook().getPrice();
+            int total = 0;
+            int num = 0;
+            for (Order order : orders) {
+                List<OrderItem> orderItems = order.getOrderItems();
+                for (OrderItem orderItem : orderItems) {
+                    num += orderItem.getNum();
+                    total += orderItem.getNum() * orderItem.getBook().getPrice();
                 }
             }
             userOrders1.setTotalNum(num);
@@ -137,7 +114,7 @@ public class UserOrdersServiceImpl implements UserOrdersService {
     @Override
     public List<UserOrders> getAllInAPeriod(String begin, String end) throws ParseException {
         SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy.MM.dd");
-        List<String> days = new ArrayList<String>();
+        List<String> days = new ArrayList<>();
 
         Date dateBegin=dateFormat.parse(begin);
         Calendar calendarBegin=Calendar.getInstance();
@@ -154,29 +131,20 @@ public class UserOrdersServiceImpl implements UserOrdersService {
         }
 
         List<UserOrders> userOrders=userOrdersDao.getAll();
-        Iterator<UserOrders> userOrdersIterator=userOrders.iterator();
-        while (userOrdersIterator.hasNext()){
-            UserOrders userOrders1=userOrdersIterator.next();
-
+        for (UserOrders userOrders1 : userOrders) {
             List<Order> orders = new ArrayList<>();
-            for(int i=0;i<days.size();i++){
-                String date=days.get(i);
-                List<Order> orders_tmp=orderDao.findOrdersByUser_IdAndDateT_Date(userOrders1.getId(),date);
+            for (String date : days) {
+                List<Order> orders_tmp = orderDao.findOrdersByUser_IdAndDateT_Date(userOrders1.getId(), date);
                 orders.addAll(orders_tmp);
             }
 
-            Integer total=0;
-            Integer num=0;
-            Iterator<Order> orderIterator=orders.iterator();
-            while (orderIterator.hasNext()){
-                Order order=orderIterator.next();
-
-                List<OrderItem> orderItems=order.getOrderItems();
-                Iterator<OrderItem> orderItemIterator=orderItems.iterator();
-                while (orderItemIterator.hasNext()){
-                    OrderItem orderItem=orderItemIterator.next();
-                    num+=orderItem.getNum();
-                    total+=orderItem.getNum()*orderItem.getBook().getPrice();
+            int total = 0;
+            int num = 0;
+            for (Order order : orders) {
+                List<OrderItem> orderItems = order.getOrderItems();
+                for (OrderItem orderItem : orderItems) {
+                    num += orderItem.getNum();
+                    total += orderItem.getNum() * orderItem.getBook().getPrice();
                 }
 
             }
@@ -190,7 +158,7 @@ public class UserOrdersServiceImpl implements UserOrdersService {
     @Override
     public UserPurchaseStatistics getPeriodStatics(String userid, String begin, String end) throws ParseException {
         SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy.MM.dd");
-        List<String> days = new ArrayList<String>();
+        List<String> days = new ArrayList<>();
 
         Date dateBegin=dateFormat.parse(begin);
         Calendar calendarBegin=Calendar.getInstance();

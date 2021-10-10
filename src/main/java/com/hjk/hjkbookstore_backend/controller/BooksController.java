@@ -5,7 +5,6 @@ import com.hjk.hjkbookstore_backend.Dto.SearchPage;
 import com.hjk.hjkbookstore_backend.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -22,7 +21,7 @@ public class BooksController {
 
     @CrossOrigin
     @RequestMapping("/bookspage")
-    public Page<Book> getBooksPage(@RequestParam("pageNum") String pageNum) { return bookService.getBooksPage(Integer.valueOf(pageNum),8); }
+    public SearchPage getBooksPage(@RequestParam("pageNum") String pageNum) { return bookService.getBooksPage(Integer.valueOf(pageNum),8); }
 
     @CrossOrigin
     @RequestMapping("/searchByTitle")

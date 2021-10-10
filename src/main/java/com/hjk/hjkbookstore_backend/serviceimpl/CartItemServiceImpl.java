@@ -24,10 +24,10 @@ public class CartItemServiceImpl implements CartItemService {
     private BookBriefDao bookBriefDao;
     @Autowired
     private UserDao userDao;
-    @Autowired
-    private DateTDao dateTDao;
-    @Autowired
-    private OrderDao orderDao;
+//    @Autowired
+//    private DateTDao dateTDao;
+//    @Autowired
+//    private OrderDao orderDao;
     @Autowired
     private BookDetailDao bookDetailDao;
     @Autowired
@@ -50,7 +50,7 @@ public class CartItemServiceImpl implements CartItemService {
     @Override
     public String putOrder(String bookid, String userid) {
 //        System.out.println("UserId= "+userid+" put an order");
-        BookBrief bookBrief=bookBriefDao.findone(Integer.valueOf(bookid));
+        BookBrief bookBrief=bookBriefDao.findOne(Integer.valueOf(bookid));
         User user=userDao.findUserById(Integer.valueOf(userid));
 
         List<CartItem> cartItems=cartItemDao.findCartItemsByUser_Id(Integer.valueOf(userid));
@@ -116,7 +116,6 @@ public class CartItemServiceImpl implements CartItemService {
         Order order=tempClass.saveAnOrder(userid, dateTToUse);
         List<CartItem> cartItems=cartItemDao.findCartItemsByUser_Id(userid);
 
-        /** @Description: save orderItem and delete cartItem **/
         for(CartItem cartItem:cartItems){
             OrderItem orderItem=new OrderItem();
             orderItem.setNum(cartItem.getNum());

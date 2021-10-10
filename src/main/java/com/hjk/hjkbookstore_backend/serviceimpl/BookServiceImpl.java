@@ -9,7 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -28,7 +27,18 @@ public class BookServiceImpl implements BookService {
     public List<Book> getBooks() { return bookDao.getBooks(); }
 
     @Override
-    public Page<Book> getBooksPage(Integer pageNum, Integer pageSize){return bookDao.getBooksPage(pageNum,pageSize);}
+    public SearchPage getBooksPage(Integer pageNum, Integer pageSize){
+        Long total=bookDao.count();
+        SearchPage searchPage= new SearchPage();
+        searchPage.setTotalPage(total.intValue()/pageSize);
+        searchPage.setCurrentPage(pageNum);
+        searchPage.setNeedle("");
+        searchPage.setPageSize(8);
+        searchPage.setTotal(total.intValue());
+        searchPage.setBooks(bookDao.getBooksPage(pageNum,pageSize));
+        return searchPage;
+//        return bookDao.getBooksPage(pageNum,pageSize);
+    }
 
     @Override
     public SearchPage search(String pageNum,String needle){
@@ -41,11 +51,9 @@ public class BookServiceImpl implements BookService {
         searchPage.setNeedle(needle.toLowerCase(Locale.ROOT));
         searchPage.setPageSize(8);
 
-        List<Book> booksResult=new ArrayList<Book>();
-        Iterator<Book> bookIterator=books.iterator();
-        while (bookIterator.hasNext()){
-            Book book=bookIterator.next();
-            if(book.getTitle().toLowerCase(Locale.ROOT).contains(needle.toLowerCase(Locale.ROOT)))
+        List<Book> booksResult= new ArrayList<>();
+        for (Book book : books) {
+            if (book.getTitle().toLowerCase(Locale.ROOT).contains(needle.toLowerCase(Locale.ROOT)))
                 booksResult.add(book);
         }
         searchPage.setTotal(booksResult.size());

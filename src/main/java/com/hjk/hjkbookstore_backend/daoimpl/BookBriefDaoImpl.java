@@ -12,5 +12,7 @@ public class BookBriefDaoImpl implements BookBriefDao {
     private BookBriefRepository bookBriefRepository;
 
     @Override
-    public BookBrief findone(Integer id){return bookBriefRepository.getOne(id);}
+    public BookBrief findOne(Integer id){
+        return bookBriefRepository.getById(id);
+    }
 }

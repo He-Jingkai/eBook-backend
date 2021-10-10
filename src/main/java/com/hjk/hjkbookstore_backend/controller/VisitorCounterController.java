@@ -25,9 +25,10 @@ public class VisitorCounterController {
     @CrossOrigin
     @RequestMapping("/getVisitorCount")
     public Integer getVisitorCount() throws ExecutionException, InterruptedException {
-        FutureTask<Integer> futureTask= new FutureTask<>(visitorsService::getInitialVisitorCount);
+        FutureTask<Integer> futureTask= new FutureTask<>(visitorsService::getVisitorCount);
         Thread thread=new Thread(futureTask);
         thread.start();
+//        System.out.println(thread.getId());
         thread.join();
         return futureTask.get();
     }
@@ -37,6 +38,7 @@ public class VisitorCounterController {
     public void increaseVisitorCount() throws InterruptedException {
         Thread thread=new Thread(new IncreaseCounter());
         thread.start();
+//        System.out.println(thread.getId());
         thread.join();
     }
 }

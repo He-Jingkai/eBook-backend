@@ -10,7 +10,9 @@ import java.util.List;
 public interface BookDao {
     Book findOne(Integer id);
     List<Book> getBooks();
-    Page<Book> getBooksPage(Integer pageNum,Integer pageSize);
-}
+    List<Book> getBooksPage(Integer pageNum,Integer pageSize);
+    Long count();
+
+    }
 
 

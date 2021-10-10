@@ -12,7 +12,7 @@ public interface BookService {
 
     List<Book> getBooks();
 
-    Page<Book> getBooksPage(Integer pageNum, Integer pageSize);
+    SearchPage getBooksPage(Integer pageNum, Integer pageSize);
 
     SearchPage search(String pageNum,String needle);
 }

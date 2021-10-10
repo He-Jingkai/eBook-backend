@@ -16,10 +16,8 @@ public class VisitorServiceImpl implements VisitorsService {
     private final Object lock=new Object();
 
     @Override
-    public Integer getInitialVisitorCount(){
-        synchronized (lock){
+    public Integer getVisitorCount(){
             return visitorsDao.getInitialVisitorCount();
-        }
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.hjk.hjkbookstore_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Table(name="book")
+@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
 public class Book {
 
     @Id

@@ -8,6 +8,8 @@ import com.hjk.hjkbookstore_backend.dao.BookDetailDao;
 import com.hjk.hjkbookstore_backend.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +43,7 @@ public class BookDetailDaoImpl implements BookDetailDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void saveOne(BookDetail bookDetail,Integer mode){
         if(mode==0){
             System.out.println("Add a book");

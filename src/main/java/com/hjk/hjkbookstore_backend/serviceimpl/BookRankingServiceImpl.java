@@ -25,19 +25,14 @@ public class BookRankingServiceImpl implements BookRankingService {
     @Override
     public List<BookRanking> getAll(){
         List<BookRanking> bookRankings=bookRankingDao.getAll();
-        Iterator<BookRanking> bookRankingIterator=bookRankings.iterator();
-        while (bookRankingIterator.hasNext()){
-            BookRanking bookRanking=bookRankingIterator.next();
-
-//            List<OrderItem> orderItems=orderItemDao.findOrderItemsByBook_Id(bookRanking.getId());
-            List<OrderItem> orderItems=bookBriefDao.findone(bookRanking.getId()).getOrderItems();
-            Integer total=0;
-            Iterator<OrderItem> orderItemIterator=orderItems.iterator();
-            while (orderItemIterator.hasNext()){
-                OrderItem orderItem=orderItemIterator.next();
-                total+=orderItem.getNum();
+        for (BookRanking bookRanking : bookRankings) {
+            //            List<OrderItem> orderItems=orderItemDao.findOrderItemsByBook_Id(bookRanking.getId());
+            List<OrderItem> orderItems = bookBriefDao.findOne(bookRanking.getId()).getOrderItems();
+            int total = 0;
+            for (OrderItem orderItem : orderItems) {
+                total += orderItem.getNum();
             }
-            Integer totalPay=total*bookRanking.getPrice();
+            Integer totalPay = total * bookRanking.getPrice();
 
             bookRanking.setTotal(total);
             bookRanking.setTotalPay(totalPay);
@@ -49,29 +44,24 @@ public class BookRankingServiceImpl implements BookRankingService {
     @Override
     public List<BookRanking> getAllInAPeriodFromNow(Integer period){
         List<BookRanking> bookRankings=bookRankingDao.getAll();
-        Iterator<BookRanking> bookRankingIterator=bookRankings.iterator();
-        while (bookRankingIterator.hasNext()){
-            BookRanking bookRanking=bookRankingIterator.next();
-
+        for (BookRanking bookRanking : bookRankings) {
             List<OrderItem> orderItems = new ArrayList<>();
-            for(int i=0;i<period;i++){
+            for (int i = 0; i < period; i++) {
                 Calendar calendar1 = Calendar.getInstance();
                 SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy.MM.dd");
                 calendar1.add(Calendar.DATE, (-i));
                 String date = sdf1.format(calendar1.getTime());
 
-                List<OrderItem> orderItems1=orderItemDao.findOrderItemsByBook_IdAndOrder_DateT_Date(bookRanking.getId(),date);
+                List<OrderItem> orderItems1 = orderItemDao.findOrderItemsByBook_IdAndOrder_DateT_Date(bookRanking.getId(), date);
                 orderItems.addAll(orderItems1);
             }
 
-            Integer total=0;
+            int total = 0;
 
-            Iterator<OrderItem> orderItemIterator=orderItems.iterator();
-            while (orderItemIterator.hasNext()){
-                OrderItem orderItem=orderItemIterator.next();
-                total+=orderItem.getNum();
+            for (OrderItem orderItem : orderItems) {
+                total += orderItem.getNum();
             }
-            Integer totalPay=total*bookRanking.getPrice();
+            Integer totalPay = total * bookRanking.getPrice();
 
             bookRanking.setTotal(total);
             bookRanking.setTotalPay(totalPay);
@@ -83,7 +73,7 @@ public class BookRankingServiceImpl implements BookRankingService {
     @Override
     public List<BookRanking> getAllInAPeriod(String begin,String end) throws ParseException {
         SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy.MM.dd");
-        List<String> days = new ArrayList<String>();
+        List<String> days = new ArrayList<>();
 
         Date dateBegin=dateFormat.parse(begin);
         Calendar calendarBegin=Calendar.getInstance();
@@ -101,25 +91,19 @@ public class BookRankingServiceImpl implements BookRankingService {
 
 
         List<BookRanking> bookRankings=bookRankingDao.getAll();
-        Iterator<BookRanking> bookRankingIterator=bookRankings.iterator();
 
-        while (bookRankingIterator.hasNext()){
-            BookRanking bookRanking=bookRankingIterator.next();
-
+        for (BookRanking bookRanking : bookRankings) {
             List<OrderItem> orderItems = new ArrayList<>();
-            for(int i=0;i<days.size();i++){
-                String date=days.get(i);
-                List<OrderItem> orderItems1=orderItemDao.findOrderItemsByBook_IdAndOrder_DateT_Date(bookRanking.getId(),date);
+            for (String date : days) {
+                List<OrderItem> orderItems1 = orderItemDao.findOrderItemsByBook_IdAndOrder_DateT_Date(bookRanking.getId(), date);
                 orderItems.addAll(orderItems1);
             }
 
-            Integer total=0;
-            Iterator<OrderItem> orderItemIterator=orderItems.iterator();
-            while (orderItemIterator.hasNext()){
-                OrderItem orderItem=orderItemIterator.next();
-                total+=orderItem.getNum();
+            int total = 0;
+            for (OrderItem orderItem : orderItems) {
+                total += orderItem.getNum();
             }
-            Integer totalPay=total*bookRanking.getPrice();
+            Integer totalPay = total * bookRanking.getPrice();
 
             bookRanking.setTotal(total);
             bookRanking.setTotalPay(totalPay);

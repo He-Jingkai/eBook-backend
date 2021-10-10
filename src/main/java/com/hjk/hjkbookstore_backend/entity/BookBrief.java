@@ -13,6 +13,7 @@ import java.util.List;
 @Table(name="book")
 @Data
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
 public class BookBrief {
     @Id
     @Column(name = "id")

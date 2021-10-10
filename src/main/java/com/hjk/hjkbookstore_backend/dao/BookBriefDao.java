@@ -3,6 +3,6 @@ package com.hjk.hjkbookstore_backend.dao;
 import com.hjk.hjkbookstore_backend.entity.BookBrief;
 
 public interface BookBriefDao {
-    BookBrief findone(Integer id);
+    BookBrief findOne(Integer id);
 
 }

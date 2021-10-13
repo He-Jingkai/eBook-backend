@@ -1,7 +1,9 @@
 package com.hjk.hjkbookstore_backend.service;
 
 import com.hjk.hjkbookstore_backend.entity.BookDetail;
+import org.apache.solr.client.solrj.SolrServerException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -12,12 +14,10 @@ public interface BookDetailService {
 
     List<BookDetail> findAll();
 
-    void delete(BookDetail bookDetail);
+    void saveABook(Map<String,Object> map) throws SolrServerException, IOException;
 
-    void saveABook(Map<String,Object> map);
+    void newABook(Map<String,Object> map) throws SolrServerException, IOException;
 
-    void newABook(Map<String,Object> map);
-
-    void deleteById(String id);
+    void deleteById(Integer id) throws SolrServerException, IOException ;
 
 }

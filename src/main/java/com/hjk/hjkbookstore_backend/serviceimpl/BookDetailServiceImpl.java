@@ -3,9 +3,12 @@ package com.hjk.hjkbookstore_backend.serviceimpl;
 import com.hjk.hjkbookstore_backend.dao.BookDetailDao;
 import com.hjk.hjkbookstore_backend.entity.BookDetail;
 import com.hjk.hjkbookstore_backend.service.BookDetailService;
+import com.hjk.hjkbookstore_backend.service.SolrService;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +18,9 @@ public class BookDetailServiceImpl implements BookDetailService {
     @Autowired
     private BookDetailDao bookDetailDao;
 
+    @Autowired
+    private SolrService solrService;
+
     @Override
     public BookDetail findBookDetailById(Integer id){ return bookDetailDao.findOne(id);}
 
@@ -22,10 +28,7 @@ public class BookDetailServiceImpl implements BookDetailService {
     public List<BookDetail> findAll(){return bookDetailDao.findAll();}
 
     @Override
-    public void delete(BookDetail bookDetail){bookDetailDao.delete(bookDetail);}
-
-    @Override
-    public void saveABook(Map<String,Object> map){
+    public void saveABook(Map<String,Object> map) throws SolrServerException, IOException {
         Integer id=(Integer) map.get("id");
         String image=(String)map.get("image");
         String title=(String)map.get("title");
@@ -47,11 +50,13 @@ public class BookDetailServiceImpl implements BookDetailService {
         bookDetail.setWriter(writer);
         bookDetail.setInventory(inventory);
         bookDetail.setIsbn(isbn);
-        bookDetailDao.saveOne(bookDetail,1);
+        BookDetail bookDetail1=bookDetailDao.saveOne(bookDetail,1);
+
+        solrService.addOrUpdate(bookDetail1.getId());
     }
 
     @Override
-    public void newABook(Map<String,Object> map){
+    public void newABook(Map<String,Object> map) throws SolrServerException, IOException {
         String image=(String)map.get("image");
         String title=(String)map.get("title");
         Integer price=(Integer)map.get("price");
@@ -72,13 +77,18 @@ public class BookDetailServiceImpl implements BookDetailService {
         bookDetail.setWriter(writer);
         bookDetail.setInventory(inventory);
         bookDetail.setIsbn(isbn);
-        bookDetailDao.saveOne(bookDetail,0);
+        BookDetail bookDetail1=bookDetailDao.saveOne(bookDetail,0);
+
+        solrService.addOrUpdate(bookDetail1.getId());
+
     }
 
     @Override
-    public void deleteById(String id){
-        BookDetail bookDetail=bookDetailDao.findOne(Integer.valueOf(id));
+    public void deleteById(Integer id) throws SolrServerException, IOException {
+        BookDetail bookDetail=bookDetailDao.findOne(id);
         bookDetailDao.delete(bookDetail);
+
+        solrService.delete(id);
     }
 
 }

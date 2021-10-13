@@ -7,7 +7,7 @@ import java.util.List;
 public interface BookDetailDao {
     BookDetail findOne(Integer id);
 
-    void saveOne(BookDetail bookDetail,Integer mode);
+    BookDetail saveOne(BookDetail bookDetail,Integer mode);
 
     List<BookDetail> findAll();
 

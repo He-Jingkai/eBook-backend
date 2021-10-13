@@ -27,58 +27,59 @@ public class BookDetailDaoImpl implements BookDetailDao {
     @Override
     public BookDetail findOne(Integer id){
         BookDetail bookDetail;
-        System.out.println("Searching BookDetail: " + id + " in Redis");
+//        System.out.println("Searching BookDetail: " + id + " in Redis");
         Object p = redisUtil.get("bookDetail" + id);
         if (p == null) {
-            System.out.println("bookDetail: " + id + " is not in Redis");
-            System.out.println("Searching bookDetail: " + id + " in DB");
+//            System.out.println("bookDetail: " + id + " is not in Redis");
+//            System.out.println("Searching bookDetail: " + id + " in DB");
             bookDetail = bookDetailRepository.findBookDetailById(id);
-            System.out.println("put bookDetail: " + id + " to Redis");
+//            System.out.println("put bookDetail: " + id + " to Redis");
             redisUtil.set("bookDetail" + id, JSONArray.toJSON(bookDetail));
         } else {
             bookDetail = JSONArray.parseObject(p.toString(), BookDetail.class);
-            System.out.println("bookDetail: " + id + " is in Redis");
+//            System.out.println("bookDetail: " + id + " is in Redis");
         }
         return bookDetail;
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void saveOne(BookDetail bookDetail,Integer mode){
+    public BookDetail saveOne(BookDetail bookDetail,Integer mode){
         if(mode==0){
-            System.out.println("Add a book");
-            System.out.println("put newly added bookDetail to DB");
+//            System.out.println("Add a book");
+//            System.out.println("put newly added bookDetail to DB");
             BookDetail bookDetail1=bookDetailRepository.save(bookDetail);
-            System.out.println("put newly added bookDetail: " + bookDetail1.getId() + " to Redis");
+//            System.out.println("put newly added bookDetail: " + bookDetail1.getId() + " to Redis");
             redisUtil.set("bookDetail" + bookDetail1.getId(), JSONArray.toJSON(bookDetail1));
+            return bookDetail;
         }
         else {
-            System.out.println("update a book");
-            System.out.println("update bookDetail: " + bookDetail.getId() + " to Redis");
+//            System.out.println("update a book");
+//            System.out.println("update bookDetail: " + bookDetail.getId() + " to Redis");
             redisUtil.set("bookDetail" + bookDetail.getId(), JSONArray.toJSON(bookDetail));
-            System.out.println("update bookDetail: " + bookDetail.getId() + " to DB");
-            bookDetailRepository.save(bookDetail);
+//            System.out.println("update bookDetail: " + bookDetail.getId() + " to DB");
+            return bookDetailRepository.save(bookDetail);
         }
     }
 
     @Override
     public List<BookDetail> findAll(){
-        System.out.println("************* find all bookDetails *************");
-        System.out.println("*** find all ID ***");
+//        System.out.println("************* find all bookDetails *************");
+//        System.out.println("*** find all ID ***");
         List<Integer> ids=bookDetailRepository.getAllId();
         List<BookDetail> bookDetails=new ArrayList<>();
         for(Integer id:ids)
             bookDetails.add(findOne(id));
-        System.out.println("************* find all bookDetails end *************");
+//        System.out.println("************* find all bookDetails end *************");
         return bookDetails;
     }
 
     @Override
     public void delete(BookDetail bookDetail){
-        System.out.println("delete a book");
-        System.out.println("delete bookDetail: " + bookDetail.getId() + " in Redis");
+//        System.out.println("delete a book");
+//        System.out.println("delete bookDetail: " + bookDetail.getId() + " in Redis");
         redisUtil.del("bookDetail" + bookDetail.getId());
-        System.out.println("delete bookDetail: " + bookDetail.getId() + " in DB");
+//        System.out.println("delete bookDetail: " + bookDetail.getId() + " in DB");
         bookDetailRepository.delete(bookDetail);
     }
 

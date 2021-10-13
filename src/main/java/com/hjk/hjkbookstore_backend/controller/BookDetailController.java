@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.hjk.hjkbookstore_backend.entity.BookDetail;
 import com.hjk.hjkbookstore_backend.service.BookDetailService;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -38,15 +39,15 @@ public class BookDetailController {
 
     @CrossOrigin
     @RequestMapping("/saveone")
-    public void saveOne(@RequestBody Map<String,Object> map) { bookDetailService.saveABook(map); }
+    public void saveOne(@RequestBody Map<String,Object> map) throws SolrServerException, IOException { bookDetailService.saveABook(map); }
 
     @CrossOrigin
     @RequestMapping("/newone")
-    public void newOne(@RequestBody Map<String,Object> map) { bookDetailService.newABook(map); }
+    public void newOne(@RequestBody Map<String,Object> map) throws SolrServerException, IOException { bookDetailService.newABook(map); }
 
     @CrossOrigin
     @RequestMapping("/deletebook")
-    public String delete(@RequestParam("bookid") String id){
+    public String delete(@RequestParam("bookid") Integer id) throws SolrServerException, IOException {
         bookDetailService.deleteById(id);
         return "done";
     }

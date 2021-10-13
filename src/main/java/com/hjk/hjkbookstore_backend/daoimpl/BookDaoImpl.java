@@ -6,11 +6,9 @@ import com.hjk.hjkbookstore_backend.entity.Book;
 import com.hjk.hjkbookstore_backend.repository.BookRepository;
 import com.hjk.hjkbookstore_backend.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
-import java.awt.print.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,30 +24,30 @@ public class BookDaoImpl implements BookDao {
     @Override
     public Book findOne(Integer id){
         Book book;
-        System.out.println("Searching Book: " + id + " in Redis");
+//        System.out.println("Searching Book: " + id + " in Redis");
         Object p = redisUtil.get("Book" + id);
         if (p == null) {
-            System.out.println("Book: " + id + " is not in Redis");
-            System.out.println("Searching Book: " + id + " in DB");
+//            System.out.println("Book: " + id + " is not in Redis");
+//            System.out.println("Searching Book: " + id + " in DB");
             book = bookRepository.getById(id);
-            System.out.println("put Book: " + id + " to Redis");
+//            System.out.println("put Book: " + id + " to Redis");
             redisUtil.set("Book" + id, JSONArray.toJSON(book));
         } else {
             book = JSONArray.parseObject(p.toString(), Book.class);
-            System.out.println("Book: " + id + " is in Redis");
+//            System.out.println("Book: " + id + " is in Redis");
         }
         return book;
     }
 
     @Override
     public List<Book> getBooks() {
-        System.out.println("************* find all books *************");
-        System.out.println("*** find all ID ***");
+//        System.out.println("************* find all books *************");
+//        System.out.println("*** find all ID ***");
         List<Integer> ids=bookRepository.getAllId();
         List<Book> books=new ArrayList<>();
         for(Integer id:ids)
             books.add(findOne(id));
-        System.out.println("************* find all books end *************");
+//        System.out.println("************* find all books end *************");
         return books;
     }
 
@@ -57,11 +55,11 @@ public class BookDaoImpl implements BookDao {
     public List<Book> getBooksPage(Integer pageNum,Integer pageSize){
         PageRequest pageRequest = PageRequest.of(pageNum - 1, pageSize);
         List<Integer> ids=bookRepository.getAllPageId(pageRequest);
-        System.out.println("************* find all books in page"+pageNum+" *************");
+//        System.out.println("************* find all books in page"+pageNum+" *************");
         List<Book> books=new ArrayList<>();
         for(Integer id:ids)
             books.add(findOne(id));
-        System.out.println("************* find all books in page"+pageNum+" end *************");
+//        System.out.println("************* find all books in page"+pageNum+" end *************");
         return books;
         //        return bookRepository.findAll(pageRequest);
     }

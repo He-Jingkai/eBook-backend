@@ -9,35 +9,35 @@ import com.hjk.hjkbookstore_backend.service.BookService;
 import com.hjk.hjkbookstore_backend.service.SolrService;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@RestController
-public class TextSearchController {
+@Endpoint
+public class TextSearchWSEndPoint {
     @Autowired
     private SolrService solrService;
     @Autowired
     private BookService bookService;
 
+    private static final String NAMESPACE_URI = "http://spring.io/guides/gs-producing-web-service";
 
-    @CrossOrigin
-    @RequestMapping("/query")
-    public List<Book> query(@RequestParam String needle) throws SolrServerException, IOException {
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "queryRequest")
+    @ResponsePayload
+    public QueryResponse query(@RequestPayload QueryRequest request) throws SolrServerException, IOException {
 //        solrService.addAll();//因为之前书籍的ID和description没有被加入solr，这行代码用于将已经存在于数据库的书籍的ID和description加入solr
         List<Book> books=new ArrayList<>();
+        String needle=request.getNeedle();
+        System.out.println(needle);
         List<Integer> ids=solrService.query(needle);
         for(Integer id:ids)
             books.add(bookService.findBookById(id));
-        return books;
+        QueryResponse response = new QueryResponse();
+        response.setBooks(JSON.toJSONString(books, SerializerFeature.BrowserCompatible));
+        return response;
     }
 }

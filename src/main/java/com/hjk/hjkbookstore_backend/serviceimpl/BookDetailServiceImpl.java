@@ -7,12 +7,15 @@ import com.hjk.hjkbookstore_backend.service.SolrService;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 @Service
+@Transactional(propagation = Propagation.REQUIRED)
 public class BookDetailServiceImpl implements BookDetailService {
 
     @Autowired

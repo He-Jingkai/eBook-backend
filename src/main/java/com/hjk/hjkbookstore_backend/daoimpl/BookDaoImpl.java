@@ -29,7 +29,7 @@ public class BookDaoImpl implements BookDao {
         if (p == null) {
 //            System.out.println("Book: " + id + " is not in Redis");
 //            System.out.println("Searching Book: " + id + " in DB");
-            book = bookRepository.getById(id);
+            book = bookRepository.getOne(id);
 //            System.out.println("put Book: " + id + " to Redis");
             redisUtil.set("Book" + id, JSONArray.toJSON(book));
         } else {

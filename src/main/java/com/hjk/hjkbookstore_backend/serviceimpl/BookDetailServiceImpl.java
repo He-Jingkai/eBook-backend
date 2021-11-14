@@ -49,7 +49,7 @@ public class BookDetailServiceImpl implements BookDetailService {
         bookDetail.setPrice(price);
         bookDetail.setAuthor(author);
         bookDetail.setDescription(description);
-        bookDetail.setContent(content);
+        bookDetail.setContents(content);
         bookDetail.setWriter(writer);
         bookDetail.setInventory(inventory);
         bookDetail.setIsbn(isbn);
@@ -76,7 +76,7 @@ public class BookDetailServiceImpl implements BookDetailService {
         bookDetail.setPrice(price);
         bookDetail.setAuthor(author);
         bookDetail.setDescription(description);
-        bookDetail.setContent(content);
+        bookDetail.setContents(content);
         bookDetail.setWriter(writer);
         bookDetail.setInventory(inventory);
         bookDetail.setIsbn(isbn);

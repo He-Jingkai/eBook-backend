@@ -1,7 +1,11 @@
 package com.hjk.hjkbookstore_backend.daoimpl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.hjk.hjkbookstore_backend.entity.BookContents;
 import com.hjk.hjkbookstore_backend.entity.BookDetail;
+import com.hjk.hjkbookstore_backend.repository.BookContentsRepository;
 import com.hjk.hjkbookstore_backend.repository.BookDetailRepository;
 import com.hjk.hjkbookstore_backend.dao.BookDetailDao;
 
@@ -13,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -20,6 +25,8 @@ public class BookDetailDaoImpl implements BookDetailDao {
 
     @Autowired
     private BookDetailRepository bookDetailRepository;
+    @Autowired
+    private BookContentsRepository bookContentsRepository;
 
     @Autowired
     RedisUtil redisUtil;
@@ -27,17 +34,22 @@ public class BookDetailDaoImpl implements BookDetailDao {
     @Override
     public BookDetail findOne(Integer id){
         BookDetail bookDetail;
-//        System.out.println("Searching BookDetail: " + id + " in Redis");
         Object p = redisUtil.get("bookDetail" + id);
-        if (p == null) {
-//            System.out.println("bookDetail: " + id + " is not in Redis");
-//            System.out.println("Searching bookDetail: " + id + " in DB");
+        if (p==null) {
+            System.out.println("mongo");
+
             bookDetail = bookDetailRepository.findBookDetailById(id);
-//            System.out.println("put bookDetail: " + id + " to Redis");
+            Optional<BookContents> bookContents = bookContentsRepository.findById(id);
+            if (bookContents.isPresent()){
+                bookDetail.setContents(JSON.toJSONString(bookContents.get().contents, SerializerFeature.BrowserCompatible).replace("\"",""));
+            }
+            else{
+                bookDetail.setContents("null haha");
+                System.out.println("It's Null");
+            }
             redisUtil.set("bookDetail" + id, JSONArray.toJSON(bookDetail));
         } else {
             bookDetail = JSONArray.parseObject(p.toString(), BookDetail.class);
-//            System.out.println("bookDetail: " + id + " is in Redis");
         }
         return bookDetail;
     }
@@ -46,18 +58,20 @@ public class BookDetailDaoImpl implements BookDetailDao {
     @Transactional(propagation = Propagation.REQUIRED)
     public BookDetail saveOne(BookDetail bookDetail,Integer mode){
         if(mode==0){
-//            System.out.println("Add a book");
-//            System.out.println("put newly added bookDetail to DB");
             BookDetail bookDetail1=bookDetailRepository.save(bookDetail);
-//            System.out.println("put newly added bookDetail: " + bookDetail1.getId() + " to Redis");
+            BookContents bookContents=new BookContents(bookDetail1.getId(),bookDetail1.getContents());
+            bookContentsRepository.save(bookContents);
             redisUtil.set("bookDetail" + bookDetail1.getId(), JSONArray.toJSON(bookDetail1));
             return bookDetail;
         }
         else {
-//            System.out.println("update a book");
-//            System.out.println("update bookDetail: " + bookDetail.getId() + " to Redis");
+            Optional<BookContents> bookContents = bookContentsRepository.findById(bookDetail.getId());
+            if (bookContents.isPresent()){
+                BookContents bookContents1 = bookContents.get();
+                bookContents1.setContents(bookDetail.getContents());
+                bookContentsRepository.save(bookContents1);
+            }
             redisUtil.set("bookDetail" + bookDetail.getId(), JSONArray.toJSON(bookDetail));
-//            System.out.println("update bookDetail: " + bookDetail.getId() + " to DB");
             return bookDetailRepository.save(bookDetail);
         }
     }

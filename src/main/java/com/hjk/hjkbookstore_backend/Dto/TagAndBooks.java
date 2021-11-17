@@ -13,6 +13,10 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TagAndBooks {
+    String tanNameInput;
+
+    Tag matchedTag;
+
     Set<Tag> firstRelatedTags;
 
     Set<Tag> secondRelatedTags;

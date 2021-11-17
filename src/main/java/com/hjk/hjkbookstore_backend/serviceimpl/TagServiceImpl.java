@@ -33,8 +33,11 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public Set<Tag> findRelatedTags(String tagName){
-        Tag tag = tagRepository.findByTagName(tagName);
-        return tag.getRelatedTags();
+        List<Tag> tags = tagRepository.findByTagNameContaining(tagName);
+        if(!tags.isEmpty())
+            return tags.get(0).getRelatedTags();
+        else
+            return new HashSet<>();
     }
 
     @Override
@@ -48,6 +51,9 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public TagAndBooks firstAndSecondRelatedTagAndBooks(String tagName){
+        List<Tag> matchedTag = tagRepository.findByTagNameContaining(tagName);
+        if(matchedTag.isEmpty())
+            return new TagAndBooks();
         Set<Tag> firstRelatedTags = findRelatedTags(tagName);
         Set<Tag> secondRelatedTags = findSecondRelatedTags(tagName);
         List<BookDetail> firstRelatedBooks = new ArrayList<>();
@@ -56,7 +62,7 @@ public class TagServiceImpl implements TagService {
         List<BookDetail> secondRelatedBooks = new ArrayList<>();
         for(Tag tag : secondRelatedTags)
             secondRelatedBooks.addAll(tagSQLDao.findTagSQLByTagName(tag.getTagName()).get(0).getBookList());
-        return new TagAndBooks(firstRelatedTags,secondRelatedTags,firstRelatedBooks,secondRelatedBooks);
+        return new TagAndBooks(tagName, matchedTag.get(0), firstRelatedTags,secondRelatedTags,firstRelatedBooks,secondRelatedBooks);
     }
 
 }

@@ -50,10 +50,10 @@ public class BookDetail {
     @Column(name = "isbn")
     private String isbn;
 
-    @JsonManagedReference
-    @ManyToOne( fetch = FetchType.EAGER)
-    @JoinColumn(name="tag", referencedColumnName = "tag_id")
-    @JsonIgnoreProperties({"bookList"})
-    private TagSQL tagSQL;
+//    @JsonManagedReference
+//    @ManyToOne( fetch = FetchType.EAGER)
+//    @JoinColumn(name="tag", referencedColumnName = "tag_id")
+//    @JsonIgnoreProperties({"bookList"})
+//    private TagSQL tagSQL;
 }
 

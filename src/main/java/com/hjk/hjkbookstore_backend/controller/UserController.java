@@ -4,9 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.hjk.hjkbookstore_backend.entity.User;
 import com.hjk.hjkbookstore_backend.service.UserService;
+import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 
@@ -27,12 +29,19 @@ public class UserController {
 
     @CrossOrigin
     @RequestMapping("/user")
-    public User userinfo(@RequestParam("userid") String userid) { return userService.findUserById(Integer.valueOf(userid)); }
+    public User userinfo(@RequestParam("userid") String userid) {
+        return userService.findUserById(Integer.valueOf(userid));
+    }
 
     @CrossOrigin
     @RequestMapping("/checkuser")
-    public User check(@RequestBody Map<String,Object> map) {
-        return userService.check(map);
+    public User check(@RequestBody Map<String,Object> map, HttpSession httpSession) {
+        User user =  userService.check(map);
+        if(user.getId() != 0){
+            httpSession.setAttribute("USERNAME", user.getUsername());
+            httpSession.setAttribute("USERID", user.getId());
+        }
+        return user;
     }
 
     @CrossOrigin

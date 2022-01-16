@@ -26,12 +26,14 @@ import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 
 @SpringBootApplication
 //@EnableEurekaClient
 @EnableMongoRepositories(basePackageClasses = BookContentsRepository.class)
 @EnableJms
+@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 6000)
 //@EnableNeo4jRepositories(basePackageClasses = TagRepository.class)
 public class HjkbookstoreBackendApplication {
 
